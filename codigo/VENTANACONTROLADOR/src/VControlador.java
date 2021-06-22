@@ -221,7 +221,9 @@ public class VControlador extends JFrame {
                     mandarControl = new Thread(salidacontrol);
                     mandarControl.start();
 
-					removeCodigoTabla(codigoAvion, 1);
+					//dejamos las entradas en blanco
+					textEntradaCodigo1.setText("");
+					textEntradaPista1.setText("");
 
 
                 } catch (Exception hay) {
@@ -304,7 +306,10 @@ public class VControlador extends JFrame {
 	
 						salidacontrol = new MandarVcontrol(temp);
 						mandarControl = new Thread(salidacontrol);
-						mandarControl.start();	
+						mandarControl.start();
+						//dejamos las entradas en blanco
+						textEntradaCodigo1.setText("");
+						textEntradaPista1.setText("");
 	
 					} catch (Exception hay) {
 						System.out.println("error en la matrix\n");

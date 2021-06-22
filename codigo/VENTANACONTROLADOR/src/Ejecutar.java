@@ -87,9 +87,10 @@ public class Ejecutar {
                 aviones[ubicacionActualizacion] = temp;
                 
                 if (aviones[ubicacionActualizacion].getPuerta() == -1 ){ // mandamos el avion a la tabla volando
-
+                    
                     if (aviones[ubicacionActualizacion].getEstado().equals("Quitar")) {
                         frame.removeCodigoTabla(aviones[ubicacionActualizacion].getCodigo(), 1);
+                        //System.out.println(" actualizar; -1; quitar");
 
                     } else {
                         frame.addtoTabla(aviones[ubicacionActualizacion], 1);
