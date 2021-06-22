@@ -24,7 +24,7 @@ public class ClienteManejoSockets {
 		try {
 			ip = InetAddress.getLocalHost();
 		} catch (Exception e) {
-			//TODO: handle exception
+
 		}
 		
 		
@@ -173,7 +173,7 @@ public class ClienteManejoSockets {
 			System.out.println("\nerror: no se encotro servidor\n");
 			throw new NullPointerException();
 		} catch (IOException e) {
-			System.out.println("\nerror: no se pudo escribir\n");
+			System.out.println("\nerror: no se pudo escribir");
 			throw new NullPointerException();
 		}
 

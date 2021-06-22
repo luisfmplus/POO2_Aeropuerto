@@ -27,7 +27,7 @@ public class Ejecutar {
         
 
         ManejoAviones manejo = new ManejoAviones();
-        ClienteManejoSockets MaSocks = new ClienteManejoSockets();
+        ClienteManejoSockets MaSocks = new ClienteManejoSockets(8010); // se define cual es el puerto estandar
         VentControlador frame = new VentControlador();
         Avion obj = null;
 
@@ -76,7 +76,6 @@ public class Ejecutar {
                 contador_error++;
                 continue;
 
-                //TODO: handle exception
             }
 
             

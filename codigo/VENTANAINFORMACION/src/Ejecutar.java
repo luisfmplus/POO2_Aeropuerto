@@ -4,10 +4,6 @@ import javax.swing.JFrame;
 import manejoSocks.*;
 
 public class Ejecutar {
-    
-
-    VentanaInformacion frame = new VentanaInformacion();
-
 
     public static void wait(int ms)
     {
@@ -24,10 +20,9 @@ public class Ejecutar {
     public static void main(String[] args) {
         
 
-        ClienteManejoSockets MaSocks = new ClienteManejoSockets();
+        ClienteManejoSockets MaSocks = new ClienteManejoSockets(8030);// se indica cual es el puerto estandar
         VentanaInformacion frame = new VentanaInformacion();
         Avion obj = null;
-        int puerta;
 
         EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -47,7 +42,7 @@ public class Ejecutar {
 
             try {
 	    	
-                obj = MaSocks.recibirObjeto(puerta);
+                obj = MaSocks.recibirObjeto();
 
         	if (obj != null) {
         		//llego un objeto y actualizamos la interfaz grafica
@@ -57,7 +52,7 @@ public class Ejecutar {
                         continue;
                     }
 
-                    frame.addtoTabla(obj, puerta);
+                    frame.addtoTabla(obj);
                 }
 	    	
 		    } catch (NullPointerException e) {
