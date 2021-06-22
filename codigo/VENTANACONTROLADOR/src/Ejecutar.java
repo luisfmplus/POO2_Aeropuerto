@@ -76,6 +76,7 @@ public class Ejecutar {
                 //no recibimos nada; pues no hay nada
 
                 condicion[1] = false;// tenemos objeto valido llegado de "Control"
+                condicion[0] = false;// tenemos objeto valido llegado de "Control"
             }
     
 
@@ -90,55 +91,72 @@ public class Ejecutar {
                     
                     if (aviones[ubicacionActualizacion].getEstado().equals("Quitar")) {
                         frame.removeCodigoTabla(aviones[ubicacionActualizacion].getCodigo(), 1);
-                        //System.out.println(" actualizar; -1; quitar");
+                        System.out.println(" actualizar; -1; quitar");
 
                     } else {
                         frame.addtoTabla(aviones[ubicacionActualizacion], 1);
-
+                        System.out.println(" actualizar; -1; añadir");
                     }
                     
 
                 } else if (aviones[ubicacionActualizacion].getPuerta() == 111) { // madamos a la tabla volando
                     
+                    aviones[ubicacionActualizacion].setPuerta(-1);
+
                     if (aviones[ubicacionActualizacion].getEstado().equals("Quitar")) {
                         frame.removeCodigoTabla(aviones[ubicacionActualizacion].getCodigo(), 1);
+                        System.out.println(" actualizar; 111; quitar");
 
                     } else {
                         frame.addtoTabla(aviones[ubicacionActualizacion], 1);
+                        System.out.println(" actualizar; 111; añadir");
 
                     }
 
                 } else if (aviones[ubicacionActualizacion].getPuerta() == 222) { // mandamos a la tabla taxi
 
+                    aviones[ubicacionActualizacion].setPuerta(-1);
+
                     if (aviones[ubicacionActualizacion].getEstado().equals("Quitar")) {
                         frame.removeCodigoTabla(aviones[ubicacionActualizacion].getCodigo(), 2);
+                        System.out.println(" actualizar; 222; quitar");
 
                     } else {
                         frame.addtoTabla(aviones[ubicacionActualizacion], 2);
+                        System.out.println(" actualizar; 222; añadir");
 
                     }
                     
                 } else if (aviones[ubicacionActualizacion].getPuerta() == 333) { // mandamos a la tabla desembarque
 
+                    aviones[ubicacionActualizacion].setPuerta(-1);
+
                     if (aviones[ubicacionActualizacion].getEstado().equals("Quitar")) {
+                        System.out.println(" por actualizar; 333; quitar");
                         frame.removeCodigoTabla(aviones[ubicacionActualizacion].getCodigo(), 3);
+                        System.out.println(" actualizar; 333; quitar");
 
                     } else {
                         frame.addtoTabla(aviones[ubicacionActualizacion], 3);
+                        System.out.println(" actualizar; 333; añadir");
 
                     }
                     
-                } else {                                                   //mandamos a la tabla desembarque
+                } else { //mandamos a la tabla desembarque
 
                     if (aviones[ubicacionActualizacion].getEstado().equals("Quitar")) {
+                        System.out.println(" por actualizar;" +aviones[ubicacionActualizacion].getPuerta() + "; quitar");
                         frame.removeCodigoTabla(aviones[ubicacionActualizacion].getCodigo(), 3);
+                        System.out.println(" actualizar;" +aviones[ubicacionActualizacion].getPuerta() + "; quitar");
 
                     } else {
                         frame.addtoTabla(aviones[ubicacionActualizacion], 3);
+                        System.out.println(" actualizar;" +aviones[ubicacionActualizacion].getPuerta() + "; añadir");
 
                     }
 
                 }
+
 
             } // condicion[0]
 

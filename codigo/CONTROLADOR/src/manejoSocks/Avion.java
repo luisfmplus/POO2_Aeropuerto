@@ -37,6 +37,11 @@ public class Avion {
 
     }
 
+    public Avion clone(){
+
+        Avion nuevo = new Avion(codigo, clasificacionAvion, tamano, estado, nombre, aerolinea, puerta);
+        return nuevo;
+    }
     
 
     public int getCodigo(){

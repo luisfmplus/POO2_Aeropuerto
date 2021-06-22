@@ -169,10 +169,10 @@ public class VControlador extends JFrame {
 
 			String codigo1;
 			String pista;
-			int numeroPista;
+			int numeroPista = -1;
 			int codigoAvion = -1;
 			int ubicacionAvion = -1;
-			Avion temp;
+			Avion temp = null;
 			boolean error = false;
 			MandarVcontrol salidacontrol;
 			Thread mandarControl;
@@ -197,7 +197,7 @@ public class VControlador extends JFrame {
 
 				}
 
-				if ((numeroPista > 3) || (numeroPista <= 0) ) {
+				if ((numeroPista > 3) && (numeroPista <= 0) ) {
 					throw new Exception();
 				}
 
@@ -211,6 +211,7 @@ public class VControlador extends JFrame {
 			
 			if (!error) {
 				//entraremos solamente cuando no halla error
+				AV_arrayVolando[ubicacionAvion].setPuerta(numeroPista);
 				temp = AV_arrayVolando[ubicacionAvion];
 
 				try {
@@ -220,6 +221,11 @@ public class VControlador extends JFrame {
                     salidacontrol = new MandarVcontrol(temp);
                     mandarControl = new Thread(salidacontrol);
                     mandarControl.start();
+
+
+					// operacion que deberia estar en Controlador
+					AV_arrayVolando[ubicacionAvion].setEstado("Aterrizando");
+					addtoTabla(AV_arrayVolando[ubicacionAvion], 1);
 
 					//dejamos las entradas en blanco
 					textEntradaCodigo1.setText("");
@@ -256,10 +262,10 @@ public class VControlador extends JFrame {
 	
 				String codigo2;
 				String puerta;
-				int numeroPuerta;
+				int numeroPuerta = -1;
 				int codigoAvion = -1;
 				int ubicacionAvion = -1;
-				Avion temp;
+				Avion temp = null;
 				boolean error = false;
 				MandarVcontrol salidacontrol;
 				Thread mandarControl;
@@ -284,7 +290,7 @@ public class VControlador extends JFrame {
 	
 					}
 	
-					if ((numeroPuerta <= 3) || (numeroPuerta > 0)) {
+					if ((numeroPuerta <= 3) && (numeroPuerta > 0)) {
 						throw new Exception();
 					}
 	
@@ -298,6 +304,7 @@ public class VControlador extends JFrame {
 				
 				if (!error) {
 					//entraremos solamente cuando no halla error
+					AV_arrayTaxi[ubicacionAvion].setPuerta(numeroPuerta);
 					temp = AV_arrayTaxi[ubicacionAvion];
 	
 					try {
@@ -307,20 +314,26 @@ public class VControlador extends JFrame {
 						salidacontrol = new MandarVcontrol(temp);
 						mandarControl = new Thread(salidacontrol);
 						mandarControl.start();
+
+						// operacion que deberia estar en Controlador
+						AV_arrayTaxi[ubicacionAvion].setEstado("Taxiando");
+						addtoTabla(AV_arrayTaxi[ubicacionAvion], 2);
+
 						//dejamos las entradas en blanco
-						textEntradaCodigo1.setText("");
-						textEntradaPista1.setText("");
+						textEntradaCodigo2.setText("");
+						textEntradaPuerta1.setText("");
 	
 					} catch (Exception hay) {
 						System.out.println("error en la matrix\n");
+
 					}
 	
 				} else {
 					//existencia de error
 	
 					//dejamos las entradas en blanco
-					textEntradaCodigo1.setText("");
-					textEntradaPista1.setText("");
+					textEntradaCodigo2.setText("");
+					textEntradaPuerta1.setText("");
 					
 					//informaremoss al usuario aabbccdd
 	
@@ -718,7 +731,7 @@ public class VControlador extends JFrame {
 
 			}
 
-			//solamente ocurre si la tabla esta llena y no encontramos el codigo
+			//solamente ocurre si la tabla esta llena y no encontramos el codigo o vacia
 			throw new NullPointerException("no encontramos el codigo solicitado");
 			
 			

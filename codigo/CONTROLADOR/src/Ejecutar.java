@@ -39,7 +39,9 @@ public class Ejecutar {
         int contador_taxiando = 0;
         Avion[] aterrizando = new Avion [15];
         int contador_aterrizando = 0;
-        Avion temp = null;
+        Avion temp1 = null;
+        Avion temp2 = null;
+        Avion temp3 = null;
 
         int tiempo_aterrizando [] = new int [15];
         int tiempo_taxiando [] = new int [15];
@@ -99,12 +101,12 @@ public class Ejecutar {
 
             // revisamos si llego nueva informacion de "Vcontrol"
             try {
-                temp = EVControl.getAvion();
+                temp1 = EVControl.getAvion();
                 condicion[1] = true; // tenemos objeto valido llegado de "Vcontrol"
             } catch (Exception e) {
                 //no recibimos nada; pues no hay nada
 
-                temp = null;
+                temp1 = null;
                 condicion[1] = false;// tenemos objeto valido llegado de "Vcontrol"
             }
 
@@ -116,21 +118,21 @@ public class Ejecutar {
                 //importante: si puerta e [1,3] puerta tiene el valor de la pista de aterrizaje
                 //importnte: si puerta != [1,3] puerta tiene el valor de la puerta
 
-                if ((temp.getPuerta() <= 3) && (temp.getPuerta() > 0) ) {
+                if ((temp1.getPuerta() <= 3) && (temp1.getPuerta() > 0) ) {
                     // el objeto recibido debe ser asignado a aterrizando
-                    temp.setEstado("Aterrizando");
-                    aterrizando[contador_aterrizando] = temp;
+                    temp1.setEstado("Aterrizando");
+                    aterrizando[contador_aterrizando] = temp1;
                     condicion[2] = true; // esta el objeto aterrizando
                     
                 } else {
 
-                    temp.setEstado("Taxiando");
-                    taxiando[contador_taxiando] = temp;
+                    temp1.setEstado("Taxiando");
+                    taxiando[contador_taxiando] = temp1;
                     condicion[2] = false; // esta el objeto taxiando
 
                 }
 
-                // le mandamos la informacion a "Vinfo"
+                // le mandamos la informacion a "Vinfo" y a "Vcontrolador"
                 // esta informacion es independiente del contador
                 // lo cual permite realizar esta operacion antes de la asignacion del contador
 
@@ -138,14 +140,26 @@ public class Ejecutar {
 
                     //Manejo con hilos del envio de informacion
 
-                    temp.setPuerta(-1); // decimos que puerta es -1 pues la pista no es la puerta
-                    salidaVinfo = new MandarVinfo(temp);
+                    // en estos momentos esta operacion no es soportada; pues resulta imposible asignar puerta y tabla destino
+                    // al mismo tiempo; sin embargo, con una correcta implementacion de un objeto "Estadistica" de forma que 
+                    // remplaze al objeto "Avion" y permita mas datos es que sera posible
+
+                    // mientras tanto, esta operacion sera realizada por el boton1 y boton2 en Vcontrolador
+
+                    //temp.setPuerta(111);//numero para indicar la tabla donde debe ser actualizado
+                    //salidaVcont = new MandarVcontrol(temp);
+                    //Thread mandarCont = new Thread(salidaVcont);
+                    //mandarCont.start();
+
+                    temp2 = temp1.clone();
+                    temp2.setPuerta(-1); // decimos que puerta es -1 pues la pista no es la puerta
+                    salidaVinfo = new MandarVinfo(temp2);
 
                     Thread mandarInfo = new Thread(salidaVinfo);
 
                     mandarInfo.start();
 
-                    contador_volando++; //aumentamos el contador del contador pues ya se mandaron los aviones a 
+                    contador_volando++; //aumentamos el contador del volando pues ya se mandaron los aviones a sus lugares
                 } catch (Exception e) {
                     System.out.println("error en la matrix\n");
                 }
@@ -186,29 +200,32 @@ public class Ejecutar {
                 //por lo tanto hay que informa a Vcontrol y Vinfo
                     try {
 
-                        temp = aterrizando[recorriendo];
+                        temp1 = aterrizando[recorriendo].clone();
+                        temp2 = aterrizando[recorriendo].clone();
+                        temp3 = aterrizando[recorriendo].clone();
 
-                        temp.setEstado("Quitar");
-                        temp.setPuerta(111);//numero para indicar la tabla donde debe ser borrado
-                        salidaVcont = new MandarVcontrol(temp);
+                        temp1.setEstado("Quitar");
+                        temp1.setPuerta(111);//numero para indicar la tabla donde debe ser borrado
+                        salidaVcont = new MandarVcontrol(temp1);
                         Thread mandarCont = new Thread(salidaVcont);
                         mandarCont.start();
                         //mandamos a borrar la entrada de la tabla volando en Vcontrolador
 
-                        temp.setEstado("Aterrizado");
-                        temp.setPuerta(222);//numero para indicar la tabla donde debe ser annadido
-                        salidaVcont = new MandarVcontrol(temp);
+                        temp2.setEstado("Aterrizado");
+                        temp2.setPuerta(222);//numero para indicar la tabla donde debe ser annadido
+                        salidaVcont = new MandarVcontrol(temp2);
                         mandarCont = new Thread(salidaVcont);
                         mandarCont.start();
                         //mandamos a annadir la entrada en la tabla taxi en Vcontrolador
                         
-
-                        temp.setPuerta(-1);
-                        salidaVinfo = new MandarVinfo(temp);
+                        temp3.setEstado("Aterrizado");
+                        temp3.setPuerta(-1);
+                        salidaVinfo = new MandarVinfo(temp3);
                         Thread mandarInfo = new Thread(salidaVinfo);
                         mandarInfo.start();
                         //mandamos a actualizar la entrada en Vinfo
                         
+                        tiempo_aterrizando[recorriendo]--; //lo mandamos a 0
 
 
                     } catch (Exception e) {
@@ -219,7 +236,7 @@ public class Ejecutar {
 
                recorriendo++;
 
-            }
+            } // while
     
         
             
@@ -242,42 +259,46 @@ public class Ejecutar {
                     //por lo tanto hay que informa a Vcontrol y Vinfo
                         try {
     
-                            temp = taxiando[recorriendo];
+                            temp1 = taxiando[recorriendo].clone();
+                            temp2 = taxiando[recorriendo].clone();
+                            temp3 = taxiando[recorriendo].clone();
+
     
-                            temp.setEstado("Quitar");
-                            temp.setPuerta(222);//numero para indicar la tabla donde debe ser borrado
-                            salidaVcont = new MandarVcontrol(temp);
+                            temp1.setEstado("Quitar");
+                            temp1.setPuerta(222);//numero para indicar la tabla donde debe ser borrado
+                            salidaVcont = new MandarVcontrol(temp1);
                             Thread mandarCont = new Thread(salidaVcont);
                             mandarCont.start();
                             //mandamos a borrar la entrada de la tabla taxi en Vcontrolador
 
-                            temp.setEstado("Desembarque");
+                            temp2.setEstado("Desembarque");
+                            temp3.setEstado("Desembarque");
                             if (taxiando[recorriendo].getPuerta() == 111){
-                                temp.setPuerta(1110);
+                                temp2.setPuerta(1110);
+                                temp3.setPuerta(1110);
                             
                             } else if (taxiando[recorriendo].getPuerta() == 222){
-                                temp.setPuerta(2220);
+                                temp2.setPuerta(2220);
+                                temp3.setPuerta(2220);
 
                             } else if (taxiando[recorriendo].getPuerta() == 333){
-                                temp.setPuerta(3330);
-
-                            } else {
-                                temp.setPuerta(taxiando[recorriendo].getPuerta());
+                                temp2.setPuerta(3330);
+                                temp3.setPuerta(3330);
 
                             }
                             
-                            salidaVcont = new MandarVcontrol(temp);
+                            salidaVcont = new MandarVcontrol(temp2);
                             mandarCont = new Thread(salidaVcont);
                             mandarCont.start();
                             //mandamos a annadir la entrada en la tabla desembarque en Vcontrolador
 
-                            salidaVinfo = new MandarVinfo(temp);
+                            salidaVinfo = new MandarVinfo(temp3);
                             Thread mandarInfo = new Thread(salidaVinfo);
                             mandarInfo.start();
                             //mandamos a actualizar la entrada de la tabla en Vinfo
                             
-    
-                            tiempo_desembarque[recorriendo] = 4;
+                            tiempo_taxiando[recorriendo]--; //lo mandamos a 0
+                            tiempo_desembarque[recorriendo] = 6;
     
                         } catch (Exception e) {
     
@@ -287,7 +308,7 @@ public class Ejecutar {
     
                    recorriendo++;
     
-                }
+                } // while
 
             //revisamos el contador de los aviones desembarcando
                 // de completarlo lo eliminamo de Vcontrol y Vinfo
@@ -306,13 +327,13 @@ public class Ejecutar {
                     //por lo tanto hay que informa a Vcontrol y Vinfo
                         try {
     
-                            temp = taxiando[recorriendo]; // usamos a los aviones en taxiando pues estan en la misma posicion
+                            temp1 = taxiando[recorriendo]; // usamos a los aviones en taxiando pues estan en la misma posicion
     
-                            temp.setEstado("Quitar");
-                            temp.setPuerta(333);//numero para indicar la tabla donde debe ser borrado
+                            temp1.setEstado("Quitar");
+                            temp1.setPuerta(333);//numero para indicar la tabla donde debe ser borrado
     
-                            salidaVcont = new MandarVcontrol(temp);
-                            salidaVinfo = new MandarVinfo(temp);
+                            salidaVcont = new MandarVcontrol(temp1);
+                            salidaVinfo = new MandarVinfo(temp1);
     
                             Thread mandarInfo = new Thread(salidaVinfo);
                             Thread mandarCont = new Thread(salidaVcont);
@@ -339,7 +360,7 @@ public class Ejecutar {
 
             for (int i = 0; i < tiempo_aterrizando.length; i++) {
                 
-                if (tiempo_aterrizando[i] == 0) {
+                if ((tiempo_aterrizando[i] == 0) || (tiempo_aterrizando[i] == 1)) {
                     continue;
                 }
                 tiempo_aterrizando[i]--;
@@ -348,7 +369,7 @@ public class Ejecutar {
 
             for (int i = 0; i < tiempo_taxiando.length; i++) {
                 
-                if (tiempo_taxiando[i] == 0) {
+                if ((tiempo_taxiando[i] == 0) || (tiempo_taxiando[i] == 1)) {
                     continue;
                 }
                 tiempo_taxiando[i]--;
@@ -356,7 +377,7 @@ public class Ejecutar {
 
             for (int i = 0; i < tiempo_desembarque.length; i++) {
                 
-                if (tiempo_desembarque[i] == 0) {
+                if ((tiempo_desembarque[i] == 0) || (tiempo_desembarque[i] == 1)) {
                     continue;
                 }
                 tiempo_desembarque[i]--;

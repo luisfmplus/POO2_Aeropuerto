@@ -13,7 +13,7 @@ public class EscuchaVcontrol implements Runnable{
     public EscuchaVcontrol(){
         
         this.socks = new ClienteManejoSockets(8025);// para escuchar "control"
-        this.naves = new Avion [15];
+        this.naves = new Avion [100];
         this.contador = 0;
         this.yaContado = 0;
     
@@ -28,7 +28,7 @@ public class EscuchaVcontrol implements Runnable{
     
                 naves[contador] = socks.recibirObjeto();
             
-            } catch (NullPointerException e) {
+            } catch (Exception e) {
                 System.out.println("error; no se recibio informacion");
                 continue;
             }
