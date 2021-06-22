@@ -47,7 +47,7 @@ public class Ejecutar {
         	if (obj != null) {
         		//llego un objeto y actualizamos la interfaz grafica
         		
-                    if (obj.getEstado() == "Quitar") {
+                    if (obj.getEstado().equals("Quitar")) {
                         frame.removeCodigoTabla(obj.getCodigo());
                         continue;
                     }

@@ -15,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JTable;
 
 import manejoSocks.*;
+import hilos.*;
 import javax.swing.JLabel;
 import org.w3c.dom.ranges.RangeException;
 import java.awt.event.ActionListener;
@@ -35,23 +36,6 @@ public class VControlador extends JFrame {
 	private JTable taxi;
 	private JTable desembarque;
 	private JTextField textField;
-
-	
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					VControlador frame = new VControlador();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
 	/**
 	 * Create the frame.
@@ -182,15 +166,80 @@ public class VControlador extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 			
 			//accion a realizar cuando se preciona el boton1
+
+			String codigo1;
+			String pista;
+			int numeroPista;
+			int codigoAvion = -1;
+			int ubicacionAvion = -1;
+			Avion temp;
+			boolean error = false;
+			MandarVcontrol salidacontrol;
+			Thread mandarControl;
 			
+
+			try {
+				codigo1 = textEntradaCodigo1.getText();
+				pista = textEntradaPista1.getText();
+
+				numeroPista = Integer.parseInt(pista);
+				codigoAvion = Integer.parseInt(codigo1);
+
+				for (int i = 0; i < AV_arrayVolando.length; i++) {
+					
+					if (AV_arrayVolando[i] == null) {
+						continue;
+					}
+					if (AV_arrayVolando[i].getCodigo() == codigoAvion) {
+						ubicacionAvion = i;
+						break;
+					}
+
+				}
+
+				if ((numeroPista > 3) || (numeroPista <= 0) ) {
+					throw new Exception();
+				}
+
+				// validaremos la pista obtenida mas alla de su rango aabbccdd
+
+
+			} catch (Exception hey) {
+				
+				error = true;
+			}
 			
+			if (!error) {
+				//entraremos solamente cuando no halla error
+				temp = AV_arrayVolando[ubicacionAvion];
+
+				try {
+
+                    //Manejo con hilos del envio de informacion
+
+                    salidacontrol = new MandarVcontrol(temp);
+                    mandarControl = new Thread(salidacontrol);
+                    mandarControl.start();
+
+					removeCodigoTabla(codigoAvion, 1);
+
+
+                } catch (Exception hay) {
+                    System.out.println("error en la matrix\n");
+                }
+
+			} else {
+				//existencia de error
+
+				//dejamos las entradas en blanco
+				textEntradaCodigo1.setText("");
+				textEntradaPista1.setText("");
+				
+				//informaremoss al usuario aabbccdd
+
+			}
 			
-			
-			
-			
-			
-			
-			
+
 			}
 		});
 		btnIngresarEntrada1.setFont(new Font("Arial", Font.BOLD, 14));
@@ -201,16 +250,80 @@ public class VControlador extends JFrame {
 		btnIngresarEntrada2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			
-			//accion a realizar cuando se preciona el boton2
-			
-			
-			
-			
-			
-			
-			
-			}
-		});
+				//accion a realizar cuando se preciona el boton2
+	
+				String codigo2;
+				String puerta;
+				int numeroPuerta;
+				int codigoAvion = -1;
+				int ubicacionAvion = -1;
+				Avion temp;
+				boolean error = false;
+				MandarVcontrol salidacontrol;
+				Thread mandarControl;
+				
+	
+				try {
+					codigo2 = textEntradaCodigo2.getText();
+					puerta = textEntradaPuerta1.getText();
+	
+					numeroPuerta = Integer.parseInt(puerta);
+					codigoAvion = Integer.parseInt(codigo2);
+	
+					for (int i = 0; i < AV_arrayTaxi.length; i++) {
+						
+						if (AV_arrayTaxi[i] == null) {
+							continue;
+						}
+						if (AV_arrayTaxi[i].getCodigo() == codigoAvion) {
+							ubicacionAvion = i;
+							break;
+						}
+	
+					}
+	
+					if ((numeroPuerta <= 3) || (numeroPuerta > 0)) {
+						throw new Exception();
+					}
+	
+					// validaremos la pista obtenida mas alla de su rango aabbccdd
+	
+	
+				} catch (Exception hey) {
+					
+					error = true;
+				}
+				
+				if (!error) {
+					//entraremos solamente cuando no halla error
+					temp = AV_arrayTaxi[ubicacionAvion];
+	
+					try {
+	
+						//Manejo con hilos del envio de informacion
+	
+						salidacontrol = new MandarVcontrol(temp);
+						mandarControl = new Thread(salidacontrol);
+						mandarControl.start();	
+	
+					} catch (Exception hay) {
+						System.out.println("error en la matrix\n");
+					}
+	
+				} else {
+					//existencia de error
+	
+					//dejamos las entradas en blanco
+					textEntradaCodigo1.setText("");
+					textEntradaPista1.setText("");
+					
+					//informaremoss al usuario aabbccdd
+	
+				}
+				
+	
+				}
+			});
 		btnIngresarEntrada2.setFont(new Font("Arial", Font.BOLD, 14));
 		btnIngresarEntrada2.setBounds(1143, 286, 126, 29);
 		getContentPane().add(btnIngresarEntrada2);

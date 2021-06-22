@@ -9,8 +9,10 @@ import hilos.*;
 
 // estados Aviones especiales: "Quitar" (remueve el avion de la interfaz grafica)
 
-// puertas especiales: 1,2 y 3 implican que el avion esta aterrizando || 111 asigna el avion a la tabla de taxiando
-// || 222 asigna el avion a la tabla de desembarque || 333 indica a la tabla desembarque 
+// puertas especiales entrando: 1,2 y 3 implican que el avion esta aterrizando
+
+// puertas especiales saliendo: 111 asigna el avion a la tabla de taxiando
+// || 222 asigna el avion a la tabla de desembarque || 333 indica a la tabla desembarque || -1 la manda a tabla vuelos
 
 public class Ejecutar {
     
@@ -30,9 +32,6 @@ public class Ejecutar {
     public static void main(String[] args) {
         
         boolean condicion [] = new boolean [10];
-        //ClienteManejoSockets MaSocksVuelos = new ClienteManejoSockets(8010); 8010 para "Vuelos"
-        ClienteManejoSockets MaSocksVcontrol = new ClienteManejoSockets(8020);// 8020 para "VentanaControl"
-        ClienteManejoSockets MaSocksInfo = new ClienteManejoSockets(8030);// 8030 para "VentanaInformacion"
 
         Avion[] volando = new Avion [15];
         int contador_volando = 0;
@@ -139,7 +138,7 @@ public class Ejecutar {
 
                     //Manejo con hilos del envio de informacion
 
-                    temp.setPuerta(-1);
+                    temp.setPuerta(-1); // decimos que puerta es -1 pues la pista no es la puerta
                     salidaVinfo = new MandarVinfo(temp);
 
                     Thread mandarInfo = new Thread(salidaVinfo);
@@ -152,7 +151,8 @@ public class Ejecutar {
                 }
 
                 // en estos momentos se debe iniciar el contador del objeto
-                // este contador solamente puede ser de clase "aterrizando" o "taxiando"
+                // este contador solamente puede ser de tipo "aterrizando" o "taxiando"
+                // el contador desembarque es automatico
 
                 if (condicion[2]) {
                     tiempo_aterrizando[contador_aterrizando] = 6; // como el limite del contador es 1 ponemos 6
@@ -188,18 +188,27 @@ public class Ejecutar {
 
                         temp = aterrizando[recorriendo];
 
-                        temp.setEstado("Aterrizado");
-                        temp.setPuerta(111);//numero para indicar el movimiento de ubicacion de tabla (volando) a (taxiando)
-
+                        temp.setEstado("Quitar");
+                        temp.setPuerta(111);//numero para indicar la tabla donde debe ser borrado
                         salidaVcont = new MandarVcontrol(temp);
+                        Thread mandarCont = new Thread(salidaVcont);
+                        mandarCont.start();
+                        //mandamos a borrar la entrada de la tabla volando en Vcontrolador
+
+                        temp.setEstado("Aterrizado");
+                        temp.setPuerta(222);//numero para indicar la tabla donde debe ser annadido
+                        salidaVcont = new MandarVcontrol(temp);
+                        mandarCont = new Thread(salidaVcont);
+                        mandarCont.start();
+                        //mandamos a annadir la entrada en la tabla taxi en Vcontrolador
+                        
+
                         temp.setPuerta(-1);
                         salidaVinfo = new MandarVinfo(temp);
-
                         Thread mandarInfo = new Thread(salidaVinfo);
-                        Thread mandarCont = new Thread(salidaVcont);
-
                         mandarInfo.start();
-                        mandarCont.start();
+                        //mandamos a actualizar la entrada en Vinfo
+                        
 
 
                     } catch (Exception e) {
@@ -235,18 +244,38 @@ public class Ejecutar {
     
                             temp = taxiando[recorriendo];
     
-                            temp.setEstado("en Puerta");
-                            temp.setPuerta(222);//numero para indicar la tabla donde se elimina
-    
+                            temp.setEstado("Quitar");
+                            temp.setPuerta(222);//numero para indicar la tabla donde debe ser borrado
                             salidaVcont = new MandarVcontrol(temp);
-                            temp.setPuerta(-1);
-                            salidaVinfo = new MandarVinfo(temp);
-    
-                            Thread mandarInfo = new Thread(salidaVinfo);
                             Thread mandarCont = new Thread(salidaVcont);
-    
-                            mandarInfo.start();
                             mandarCont.start();
+                            //mandamos a borrar la entrada de la tabla taxi en Vcontrolador
+
+                            temp.setEstado("Desembarque");
+                            if (taxiando[recorriendo].getPuerta() == 111){
+                                temp.setPuerta(1110);
+                            
+                            } else if (taxiando[recorriendo].getPuerta() == 222){
+                                temp.setPuerta(2220);
+
+                            } else if (taxiando[recorriendo].getPuerta() == 333){
+                                temp.setPuerta(3330);
+
+                            } else {
+                                temp.setPuerta(taxiando[recorriendo].getPuerta());
+
+                            }
+                            
+                            salidaVcont = new MandarVcontrol(temp);
+                            mandarCont = new Thread(salidaVcont);
+                            mandarCont.start();
+                            //mandamos a annadir la entrada en la tabla desembarque en Vcontrolador
+
+                            salidaVinfo = new MandarVinfo(temp);
+                            Thread mandarInfo = new Thread(salidaVinfo);
+                            mandarInfo.start();
+                            //mandamos a actualizar la entrada de la tabla en Vinfo
+                            
     
                             tiempo_desembarque[recorriendo] = 4;
     
@@ -280,7 +309,7 @@ public class Ejecutar {
                             temp = taxiando[recorriendo]; // usamos a los aviones en taxiando pues estan en la misma posicion
     
                             temp.setEstado("Quitar");
-                            temp.setPuerta(333);//numero para indicar el movimiento de ubicacion de tabla (taxiando) a (desembarque)
+                            temp.setPuerta(333);//numero para indicar la tabla donde debe ser borrado
     
                             salidaVcont = new MandarVcontrol(temp);
                             salidaVinfo = new MandarVinfo(temp);
